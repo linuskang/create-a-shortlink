@@ -1,164 +1,275 @@
-# lkang.au
+# Shortlink Redirect Service
 
-A simple, static shortlinks/URL redirect service hosted on GitHub Pages.
+A community-driven, static shortlink/URL redirect service hosted on GitHub Pages.
 
-## Overview
+## 🌟 Overview
 
-This repository powers the `lkang.au` domain with short, memorable URLs that redirect to longer destinations. It uses static HTML files with meta refresh and JavaScript redirects for maximum compatibility.
+This repository provides a simple yet powerful shortlink service where anyone can submit redirect requests via Pull Requests. Each shortlink is a clean, memorable URL that redirects to your longer destination URL. Built entirely with static HTML and automated via GitHub Actions - no server required!
 
-## Features
+## ✨ Features
 
-- **Fast redirects**: Uses `<meta http-equiv="refresh">` for instant redirection
-- **JavaScript fallback**: Ensures compatibility with all browsers
-- **SEO-friendly**: Includes canonical URLs and Open Graph meta tags
-- **Social media ready**: Twitter Card and Open Graph support for link previews
-- **Automated generation**: GitHub Actions automatically regenerates pages when `redirects.json` is updated
-- **No server required**: Fully static, works with GitHub Pages
+- **🚀 Fast redirects**: Meta refresh + JavaScript for instant redirection
+- **🔍 Search functionality**: Live search to find shortlinks and see who owns them
+- **🎨 Modern UI**: Beautiful landing page with gradient design and smooth animations
+- **🌐 Universal compatibility**: Works in all browsers with fallback mechanisms
+- **🤝 Community-driven**: Anyone can submit shortlink requests via PR or Issues
+- **🔒 Validated**: Automated validation ensures quality and security
+- **📱 Social media ready**: Open Graph and Twitter Card support for rich previews
+- **⚡ Automated**: GitHub Actions handles generation and deployment
+- **🆓 Free & Open**: No server costs, fully static on GitHub Pages
+- **📊 Metadata support**: Optional descriptions and owner tracking
+- **🔐 Privacy first**: Zero tracking, no cookies, no analytics - fully documented
+- **📄 Professional pages**: Terms, Privacy Policy, About, and custom 404 page
 
-## Current Shortlinks
+## 🤝 How to Request a Shortlink
 
-| Shortlink | Destination |
-|-----------|-------------|
-| [lkang.au](https://lkang.au) | https://linuskang.au |
-| [lkang.au/software](https://lkang.au/software) | https://software.linuskang.au |
-| [lkang.au/discord](https://lkang.au/discord) | https://discord.com/invite/qW6SH74kNR |
-| [lkang.au/github](https://lkang.au/github) | https://github.com/linuskang |
-| [lkang.au/support](https://lkang.au/support) | mailto:support@linus.id.au |
-| [lkang.au/bubblymaps](https://lkang.au/bubblymaps) | https://bubbly.linuskang.au |
+We welcome community contributions! There are two ways to request a shortlink:
 
-## How to Add a New Shortlink
+### Option 1: Submit an Issue (Easiest)
 
-1. Open `redirects.json`
-2. Add a new entry with the slug (short path) as the key and the destination URL as the value:
+1. Go to [Issues](../../issues/new/choose)
+2. Select "Request a Shortlink"
+3. Fill out the form
+4. Wait for approval (typically 1-3 days)
 
+### Option 2: Submit a Pull Request
+
+1. Fork this repository
+2. Edit `redirects.json` to add your shortlink
+3. Run `node validate.js` to check for errors
+4. Submit a PR using the provided template
+
+📖 **For detailed instructions, see [CONTRIBUTING.md](CONTRIBUTING.md)**
+
+### Shortlink Guidelines
+
+- **Allowed**: Personal projects, portfolios, social media, documentation, open source projects
+- **Not allowed**: Malicious links, spam, NSFW content, phishing
+- **Format**: 2-50 characters, lowercase alphanumeric and hyphens only
+- **Reserved words**: Cannot use `admin`, `api`, `files`, etc. (see full list in `validate.js`)
+
+## 📋 Current Shortlinks
+
+| Shortlink | Destination | Owner |
+|-----------|-------------|-------|
+| [github](https://yourdomain.com/github) | https://github.com/linuskang/create-a-shortlink | linuskang |
+
+*View all shortlinks in [redirects.json](redirects.json)*
+
+## 📝 Redirects.json Format
+
+The `redirects.json` file supports two formats:
+
+**Simple format** (string URL):
 ```json
 {
-  "": "https://linuskang.au",
-  "mylink": "https://example.com/long-url-here"
+  "github": "https://github.com/yourusername"
 }
 ```
 
-3. Commit and push your changes
-4. GitHub Actions will automatically generate the redirect pages
-
-### Manual Generation (Optional)
-
-If you want to generate redirect pages locally:
-
-```bash
-node generate.js
+**Extended format** (with metadata):
+```json
+{
+  "github": {
+    "url": "https://github.com/yourusername",
+    "description": "My GitHub profile",
+    "owner": "yourusername"
+  }
+}
 ```
 
-This will:
-- Read all entries from `redirects.json`
-- Create a directory for each shortlink slug
-- Generate an `index.html` file with the redirect logic
-- **Delete any old shortlink directories** that are no longer in `redirects.json`
-- Display a summary of generated and deleted redirects
+Metadata fields are optional but recommended for better organization.
 
-## File Structure
+## 📁 Repository Structure
 
 ```
-lkang.au/
-├── redirects.json          # Shortlink definitions
-├── generate.js             # Redirect page generator
-├── generate-index.js       # File index generator
-├── index.html              # Root redirect page
-├── CNAME                   # GitHub Pages custom domain
-├── README.md               # This file
+shortlink-service/
+├── index.html                  # Main landing page with search
+├── about/                      # About page
+├── terms/                      # Terms & Conditions
+├── privacy/                    # Privacy Policy
+├── redirects.json              # Shortlink definitions
+├── generate.js                 # Redirect page generator
+├── validate.js                 # Validation script for PRs
+├── server.js                   # Local testing server
+├── 404.html                    # Custom 404 page
+├── CONTRIBUTING.md             # Contribution guidelines
+├── README.md                   # This file
 ├── .github/
-│   └── workflows/
-│       ├── generate-redirects.yml  # Auto-generate on redirects.json change
-│       └── generate-index.yml      # Auto-generate file index
+│   ├── workflows/
+│   │   ├── generate-redirects.yml   # Auto-generate on push
+│   │   └── validate-pr.yml          # Validate PRs automatically
+│   ├── ISSUE_TEMPLATE/
+│   │   └── shortlink-request.yml    # Issue template for requests
+│   └── pull_request_template.md     # PR template
 └── [slug]/
-    └── index.html          # Generated redirect pages
+    └── index.html              # Generated redirect pages (auto-created)
 ```
 
-## How It Works
+## 🛠️ Local Development
+
+### Testing Locally
+
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/yourusername/shortlink-service.git
+   cd shortlink-service
+   ```
+
+2. **Validate changes**:
+   ```bash
+   npm run validate
+   # or: node validate.js
+   ```
+
+3. **Generate redirect pages**:
+   ```bash
+   npm run generate
+   # or: node generate.js
+   ```
+
+4. **Test locally with built-in server**:
+   ```bash
+   npm run serve
+   # or: node server.js
+   ```
+   
+   Then visit `http://localhost:8080/yourslug` to test redirects.
+
+5. **Run all checks and start server**:
+   ```bash
+   npm start
+   ```
+
+### NPM Scripts
+
+- `npm run validate` - Check redirects.json for errors
+- `npm run generate` - Generate redirect HTML pages
+- `npm run serve` - Start local test server
+- `npm test` - Validate and generate
+- `npm start` - Generate and serve
+
+## ⚙️ How It Works
 
 ### Redirect Mechanism
 
-Each generated redirect page uses three methods to ensure the redirect works:
+Each generated redirect page uses multiple methods for maximum compatibility:
 
-1. **Meta Refresh** (Primary): `<meta http-equiv="refresh" content="0; url=...">`
-2. **JavaScript** (Fallback): `window.location.replace("...")`
-3. **Clickable Link** (Manual): For users with JavaScript disabled
+1. **Meta Refresh** (Primary): `<meta http-equiv="refresh" content="0; url=...">` - Works even with JavaScript disabled
+2. **JavaScript Redirect** (Fallback): `window.location.replace("...")` - Instant redirect
+3. **Manual Link** (Last Resort): Clickable link for edge cases
 
-### GitHub Actions
-
-Two workflows automate the generation process. Both can also be triggered manually via the GitHub Actions UI using "Run workflow".
+### GitHub Actions Workflows
 
 #### 1. Generate Redirects (`generate-redirects.yml`)
 
-| Trigger | Description |
-|---------|-------------|
-| `push` to `main` | When `redirects.json` or `generate.js` is modified |
-| `workflow_dispatch` | Manual trigger via GitHub Actions UI |
+**Triggers:**
+- Push to `main` when `redirects.json` or `generate.js` changes
+- Manual trigger via "Run workflow"
 
-**What it does:**
-- Runs `node generate.js` to create/update redirect pages
-- Automatically deletes shortlink directories that are no longer in `redirects.json`
-- Commits and pushes the generated files back to the repository
+**Actions:**
+- Generates/updates HTML redirect pages
+- Deletes removed shortlinks automatically
+- Commits and pushes changes
 
-**Example:** When you add a new shortlink to `redirects.json` and push, this workflow automatically creates the redirect page. When you remove a shortlink, it automatically deletes the old directory.
+#### 2. Validate PR (`validate-pr.yml`)
 
-#### 2. Generate File Index (`generate-index.yml`)
+**Triggers:**
+- Pull requests that modify `redirects.json`
 
-| Trigger | Description |
-|---------|-------------|
-| `push` to `main` | When `generate-index.js`, `*.pdf`, or `*.json` files change |
-| `workflow_dispatch` | Manual trigger via GitHub Actions UI |
+**Actions:**
+- Runs `validate.js` to check for errors
+- Validates URL format, slug naming, duplicates
+- Comments on PR with results
+- Blocks merge if validation fails
 
-**What it does:**
-- Creates an HTML index of all files in the repository
-- Outputs to `files/index.html`
-- Available at [lkang.au/files](https://lkang.au/files)
+### Validation Rules
+
+The `validate.js` script checks:
+- ✅ URL format and protocol (http, https, mailto only)
+- ✅ Slug naming (2-50 chars, lowercase alphanumeric + hyphens)
+- ✅ No reserved words (`admin`, `api`, etc.)
+- ✅ No duplicate URLs or slugs
+- ✅ Valid JSON structure
+- ⚠️ Warns about very long URLs or duplicate destinations
 
 ### Automatic Cleanup
 
-When you remove a shortlink from `redirects.json`, the generator automatically:
-1. Detects directories that were previously generated shortlinks
-2. Verifies they contain our redirect marker (to avoid deleting unrelated files)
-3. Deletes the old shortlink directories
+When shortlinks are removed from `redirects.json`:
+1. Generator detects orphaned directories
+2. Verifies they contain redirect markers (safety check)
+3. Automatically deletes old shortlink folders
+4. Keeps repository clean
 
-This ensures your repository stays clean without manual cleanup.
+## 🎨 Customization
 
-## Configuration
+### Meta Tags & SEO
 
-### Adding Custom Metadata
+Each redirect page automatically includes:
+- Open Graph tags for social media previews
+- Twitter Card metadata
+- Canonical URLs
+- Proper HTML5 structure
 
-Each redirect page includes:
-- Open Graph meta tags for social media previews
-- Twitter Card meta tags
-- Canonical URL for SEO
-- Proper HTML5 document structure
+### Custom Domain
 
-### URL Validation
+To use your own domain:
+1. Add a `CNAME` file with your domain name
+2. Configure DNS records (see [GitHub Pages docs](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site))
+3. Enable GitHub Pages in repository settings
 
-The generator validates all URLs before creating redirect pages. Invalid URLs will be skipped with an error message.
+## 🔧 Configuration
 
-## Local Development
+### Protected Items
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/linuskangsoftware/lkang.au.git
-   cd lkang.au
-   ```
+The following items are never deleted by the cleanup process:
+- `.git`, `.github`, `node_modules`
+- `CNAME`, `LICENSE`, `README.md`
+- `generate.js`, `validate.js`, `redirects.json`
+- `404.html`, `files/`
 
-2. Modify `redirects.json` to add or update shortlinks
+### Reserved Slugs
 
-3. Generate redirect pages:
-   ```bash
-   node generate.js
-   ```
+These slugs cannot be used as shortlinks (see `validate.js` for complete list):
+- `admin`, `api`, `assets`, `config`
+- `files`, `images`, `public`, `static`
+- `help`, `support`, `docs`, `about`
+- And more...
 
-4. (Optional) Generate the file index:
-   ```bash
-   node generate-index.js
-   ```
+## 📊 Monitoring & Maintenance
 
-5. Commit and push to trigger GitHub Actions
+### Checking Link Health
 
-## License
+Contributors should verify their destination URLs are still active. Dead links may be removed during periodic maintenance.
+
+### Analytics (Optional)
+
+To track shortlink usage, you can:
+- Use GitHub Pages built-in analytics
+- Add Google Analytics or similar tracking
+- Use URL shortener services that provide analytics
+
+## ❓ FAQ
+
+**Q: How long until my shortlink is live?**  
+A: Once approved and merged, GitHub Actions deploys within 1-2 minutes.
+
+**Q: Can I update my existing shortlink?**  
+A: Yes! Submit a new PR modifying your entry in `redirects.json`.
+
+**Q: Can I have multiple shortlinks?**  
+A: Yes, as long as each follows the guidelines.
+
+**Q: What if my shortlink stops working?**  
+A: Open an issue and we'll investigate. May be due to invalid destination URL.
+
+**Q: Can I delete my shortlink?**  
+A: Yes, submit a PR removing your entry or open an issue requesting deletion.
+
+## 📜 License
 
 See [LICENSE](LICENSE) file for details.
+
+## 🙏 Credits
+
+Built with ❤️ for the community. Powered by GitHub Pages and GitHub Actions.

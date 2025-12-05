@@ -1,0 +1,87 @@
+name: Request a Shortlink
+description: Request a new shortlink for your project or resource
+title: "[Shortlink Request] "
+labels: ["shortlink-request"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for requesting a shortlink! Please fill out the information below.
+
+  - type: input
+    id: slug
+    attributes:
+      label: Desired Shortlink Slug
+      description: The short path you want (e.g., "myproject" for example.com/myproject)
+      placeholder: "myproject"
+    validations:
+      required: true
+
+  - type: input
+    id: url
+    attributes:
+      label: Destination URL
+      description: The full URL where the shortlink should redirect
+      placeholder: "https://example.com/my-long-url-here"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Brief description of what this shortlink is for
+      placeholder: "This shortlink is for my personal portfolio website"
+    validations:
+      required: false
+
+  - type: input
+    id: owner
+    attributes:
+      label: Your Name or GitHub Username
+      description: So we know who requested this shortlink
+      placeholder: "username"
+    validations:
+      required: false
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      description: What type of content does this link to?
+      options:
+        - Personal Project
+        - Portfolio
+        - Social Media
+        - Documentation
+        - Open Source Project
+        - Contact Information
+        - Educational Resource
+        - Event/Registration
+        - Other
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: guidelines
+    attributes:
+      label: Guidelines
+      description: Please confirm you've read and agree to the guidelines
+      options:
+        - label: I've read the [CONTRIBUTING.md](../blob/main/CONTRIBUTING.md) guidelines
+          required: true
+        - label: This link is appropriate and not malicious, spam, or NSFW
+          required: true
+        - label: The slug follows naming rules (2-50 chars, lowercase alphanumeric and hyphens only)
+          required: true
+        - label: I understand this is a manual approval process
+          required: true
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Any other information that might be helpful
+      placeholder: "Optional: Add any other context here"
+    validations:
+      required: false

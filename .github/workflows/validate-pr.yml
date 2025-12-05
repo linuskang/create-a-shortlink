@@ -1,0 +1,80 @@
+name: Validate Pull Request
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'redirects.json'
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout PR branch
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+
+    - name: Run validation
+      id: validate
+      run: |
+        echo "Running validation..."
+        if node validate.js > validation_output.txt 2>&1; then
+          echo "validation_passed=true" >> $GITHUB_OUTPUT
+        else
+          echo "validation_passed=false" >> $GITHUB_OUTPUT
+        fi
+        cat validation_output.txt
+
+    - name: Comment on PR - Success
+      if: steps.validate.outputs.validation_passed == 'true'
+      uses: actions/github-script@v7
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const fs = require('fs');
+          const output = fs.readFileSync('validation_output.txt', 'utf8');
+          
+          github.rest.issues.createComment({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: context.issue.number,
+            body: `## ✅ Validation Passed!\n\nYour shortlink request has been validated successfully.\n\n<details><summary>Validation Details</summary>\n\n\`\`\`\n${output}\n\`\`\`\n\n</details>\n\n**Next Steps:**\n- Waiting for manual review and approval\n- Once approved, the shortlink will be automatically deployed\n\nThank you for your contribution! 🎉`
+          });
+
+    - name: Comment on PR - Failure
+      if: steps.validate.outputs.validation_passed == 'false'
+      uses: actions/github-script@v7
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const fs = require('fs');
+          const output = fs.readFileSync('validation_output.txt', 'utf8');
+          
+          github.rest.issues.createComment({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: context.issue.number,
+            body: `## ❌ Validation Failed\n\nThere were some issues with your shortlink request. Please review the errors below and update your PR.\n\n<details><summary>Validation Errors</summary>\n\n\`\`\`\n${output}\n\`\`\`\n\n</details>\n\n**Common Issues:**\n- Invalid URL format (must be http/https/mailto)\n- Slug naming rules not followed (lowercase, alphanumeric + hyphens only)\n- Reserved slug name used\n- Duplicate URL or slug\n- Invalid JSON format\n\nPlease refer to [CONTRIBUTING.md](../blob/main/CONTRIBUTING.md) for guidelines.`
+          });
+
+    - name: Fail workflow if validation failed
+      if: steps.validate.outputs.validation_passed == 'false'
+      run: |
+        echo "Validation failed. Please fix the errors above."
+        exit 1
+
+    - name: Success message
+      if: steps.validate.outputs.validation_passed == 'true'
+      run: |
+        echo "✅ All validation checks passed!"
+        echo "PR is ready for manual review."

@@ -14,6 +14,14 @@ const PROTECTED_ITEMS = new Set([
   'generate.js',
   'generate-index.js',
   'redirects.json',
+  'validate.js',
+  'server.js',
+  'package.json',
+  '404.html',
+  'index.html',
+  'about',
+  'terms',
+  'privacy',
   'files',
   'resume.pdf'
 ]);
@@ -158,7 +166,21 @@ console.log("🔗 lkang.au Shortlink Generator\n");
 console.log("Processing redirects.json...\n");
 
 for (const slug in redirects) {
-  const url = redirects[slug];
+  const entry = redirects[slug];
+  let url;
+  let metadata = {};
+
+  // Support both string URLs and object format with metadata
+  if (typeof entry === "string") {
+    url = entry;
+  } else if (typeof entry === "object" && entry !== null) {
+    url = entry.url;
+    metadata = entry;
+  } else {
+    errors.push({ slug, url: "", reason: "Invalid entry format" });
+    skipped++;
+    continue;
+  }
   
   // Validate URL
   if (!isValidUrl(url)) {
@@ -173,7 +195,10 @@ for (const slug in redirects) {
   try {
     fs.mkdirSync(dir, { recursive: true });
     fs.writeFileSync(path.join(dir, "index.html"), html);
-    console.log(`  ✓ ${slug || "(root)"} → ${url}`);
+    
+    // Display with metadata if available
+    const displayInfo = metadata.owner ? ` (${metadata.owner})` : "";
+    console.log(`  ✓ ${slug || "(root)"} → ${url}${displayInfo}`);
     generated++;
   } catch (err) {
     errors.push({ slug, url, reason: err.message });

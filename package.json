@@ -1,0 +1,29 @@
+{
+  "name": "shortlink-redirect-service",
+  "version": "1.0.0",
+  "description": "A community-driven shortlink redirect service",
+  "main": "generate.js",
+  "scripts": {
+    "generate": "node generate.js",
+    "validate": "node validate.js",
+    "serve": "node server.js",
+    "test": "npm run validate && npm run generate",
+    "start": "npm run generate && npm run serve"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/linuskang/create-a-shortlink.git"
+  },
+  "keywords": [
+    "shortlink",
+    "redirect",
+    "url-shortener",
+    "github-pages",
+    "static-site"
+  ],
+  "author": "linuskang",
+  "license": "MIT",
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
