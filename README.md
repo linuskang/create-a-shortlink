@@ -53,7 +53,8 @@ This will:
 - Read all entries from `redirects.json`
 - Create a directory for each shortlink slug
 - Generate an `index.html` file with the redirect logic
-- Display a summary of generated redirects
+- **Delete any old shortlink directories** that are no longer in `redirects.json`
+- Display a summary of generated and deleted redirects
 
 ## File Structure
 
@@ -85,16 +86,42 @@ Each generated redirect page uses three methods to ensure the redirect works:
 
 ### GitHub Actions
 
-Two workflows automate the generation process:
+Two workflows automate the generation process. Both can also be triggered manually via the GitHub Actions UI using "Run workflow".
 
-1. **Generate Redirects** (`generate-redirects.yml`)
-   - Triggers when `redirects.json` or `generate.js` is modified
-   - Runs `node generate.js` to create redirect pages
-   - Commits and pushes the generated files
+#### 1. Generate Redirects (`generate-redirects.yml`)
 
-2. **Generate File Index** (`generate-index.yml`)
-   - Creates an index of all files in the repository
-   - Available at [lkang.au/files](https://lkang.au/files)
+| Trigger | Description |
+|---------|-------------|
+| `push` to `main` | When `redirects.json` or `generate.js` is modified |
+| `workflow_dispatch` | Manual trigger via GitHub Actions UI |
+
+**What it does:**
+- Runs `node generate.js` to create/update redirect pages
+- Automatically deletes shortlink directories that are no longer in `redirects.json`
+- Commits and pushes the generated files back to the repository
+
+**Example:** When you add a new shortlink to `redirects.json` and push, this workflow automatically creates the redirect page. When you remove a shortlink, it automatically deletes the old directory.
+
+#### 2. Generate File Index (`generate-index.yml`)
+
+| Trigger | Description |
+|---------|-------------|
+| `push` to `main` | When `generate-index.js`, `*.pdf`, or `*.json` files change |
+| `workflow_dispatch` | Manual trigger via GitHub Actions UI |
+
+**What it does:**
+- Creates an HTML index of all files in the repository
+- Outputs to `files/index.html`
+- Available at [lkang.au/files](https://lkang.au/files)
+
+### Automatic Cleanup
+
+When you remove a shortlink from `redirects.json`, the generator automatically:
+1. Detects directories that were previously generated shortlinks
+2. Verifies they contain our redirect marker (to avoid deleting unrelated files)
+3. Deletes the old shortlink directories
+
+This ensures your repository stays clean without manual cleanup.
 
 ## Configuration
 
